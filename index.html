@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfolio Canggih & Chat Gemini</title>
+  <!-- Google Fonts untuk tampilan modern -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Reset dan dasar styling */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+    /* Header dengan background gradient & visitor counter */
+    header {
+      background: linear-gradient(135deg, #4a90e2, #9013fe);
+      color: #fff;
+      text-align: center;
+      padding: 80px 20px 40px;
+      position: relative;
+    }
+    header h1 { font-size: 3rem; margin-bottom: 10px; }
+    header p { font-size: 1.2rem; }
+    #visitorCounter { margin-top: 15px; font-size: 1.1rem; font-weight: 500; }
+    /* Container umum */
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    /* Section Portofolio */
+    .portfolio {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .portfolio-item {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      flex: 1 1 calc(33.333% - 40px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .portfolio-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    .portfolio-item h2 { margin-bottom: 15px; font-size: 1.8rem; }
+    .portfolio-item p { font-size: 0.95rem; }
+    /* Section Request */
+    .request-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+    }
+    .request-section h2 { margin-bottom: 20px; font-size: 1.8rem; }
+    .request-section label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    .request-section input,
+    .request-section select,
+    .request-section textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .request-section button {
+      padding: 12px 24px;
+      border: none;
+      background: #4a90e2;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-right: 10px;
+    }
+    .request-section button:hover { background: #357ABD; }
+    #status { margin-top: 15px; font-style: italic; color: #555; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    table th, table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    table th { background: #f7f7f7; }
+    #resultSummary { margin-top: 10px; font-weight: 600; font-size: 1.1rem; }
+    /* Panel Panduan Penggunaan */
+    #usageGuide {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 6px;
+      margin-top: 20px;
+      display: none;
+    }
+    #usageGuide h3 { margin-bottom: 10px; }
+    #usageGuide ul { list-style: disc; margin-left: 20px; }
+    /* Tombol Panduan */
+    #toggleGuide {
+      background: #ff7f50;
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #toggleGuide:hover { background: #ff6333; }
+    /* Chat Modal & Tombol Chat */
+    .chat-button {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #ff4081;
+      border: none;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      font-size: 32px;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      transition: background 0.3s, transform 0.3s;
+    }
+    .chat-button:hover {
+      background: #e73370;
+      transform: scale(1.05);
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #fff;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 12px;
+      overflow: hidden;
+      animation: fadeIn 0.4s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-header {
+      background: #4a90e2;
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h2 { font-size: 1.5rem; }
+    .modal-header .close { cursor: pointer; font-size: 1.8rem; }
+    .modal-body { padding: 20px; height: 300px; overflow-y: auto; border-bottom: 1px solid #ddd; }
+    .modal-footer {
+      padding: 15px 20px;
+      display: flex;
+      gap: 10px;
+    }
+    .modal-footer input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .modal-footer button {
+      padding: 10px 20px;
+      background: #4a90e2;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .chat-message { margin-bottom: 12px; }
+    .chat-message span {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 8px;
+      max-width: 80%;
+    }
+    .chat-message.self span { background: #4a90e2; color: #fff; }
+    .chat-message.gemini span { background: #e5e5ea; color: #333; }
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      margin-top: 40px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header dengan Visitor Counter -->
+  <header>
+    <h1>Selamat Datang di Portfolio Saya</h1>
+    <p>Website canggih dengan fitur Chat Gemini & Pengiriman HTTP Request</p>
+    <div id="visitorCounter">Pengunjung: <span id="visitorCount">Loading...</span></div>
+  </header>
+
+  <div class="container">
+    <!-- Portofolio Section -->
+    <section class="portfolio">
+      <div class="portfolio-item" onclick="window.open('https://github.com/THEOYS123/ren-scan', '_blank')">
+        <h2>Proyek 1</h2>
+        <p>Deskripsi singkat tentang proyek 1. Klik untuk melihat detail di GitHub.</p>
+      </div>
+      <div class="portfolio-item" onclick="window.open('https://github.com/THEOYS123/ren-scan', '_blank')">
+        <h2>Proyek 2</h2>
+        <p>Deskripsi singkat tentang proyek 2. Klik untuk melihat detail di GitHub.</p>
+      </div>
+      <div class="portfolio-item" onclick="window.open('https://github.com/THEOYS123/ren-scan', '_blank')">
+        <h2>Proyek 3</h2>
+        <p>Deskripsi singkat tentang proyek 3. Klik untuk melihat detail di GitHub.</p>
+      </div>
+    </section>
+
+    <!-- Request Section -->
+    <section class="request-section">
+      <h2>Kirim HTTP Request</h2>
+      <label for="url">URL</label>
+      <input type="text" id="url" placeholder="https://contoh.com/api">
+      
+      <label for="senderName">Nama Pengirim</label>
+      <input type="text" id="senderName" placeholder="Masukkan nama Anda">
+      
+      <label for="method">Method (Pilih salah satu)</label>
+      <select id="method">
+        <option value="GET">GET</option>
+        <option value="POST">POST</option>
+        <option value="PUT">PUT</option>
+        <option value="DELETE">DELETE</option>
+        <option value="HEAD">HEAD</option>
+        <option value="OPTIONS">OPTIONS</option>
+        <option value="PATCH">PATCH</option>
+        <option value="TRACE">TRACE</option>
+        <option value="CONNECT">CONNECT</option>
+        <option value="PROPFIND">PROPFIND</option>
+      </select>
+      
+      <label for="payload">Payload (hanya untuk method selain GET/HEAD)</label>
+      <textarea id="payload" rows="4" placeholder='{"key": "value"}'></textarea>
+      
+      <label for="threads">Jumlah Threads</label>
+      <input type="number" id="threads" value="1" min="1" max="10">
+      
+      <div>
+        <button id="start">Mulai Kirim</button>
+        <button id="stop">Berhenti Kirim</button>
+      </div>
+      
+      <div id="status"></div>
+      
+      <!-- Tabel Log -->
+      <table id="logTable">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Timestamp</th>
+            <th>Thread</th>
+            <th>Method</th>
+            <th>Sender</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Log akan ditambahkan secara dinamis -->
+        </tbody>
+      </table>
+      
+      <!-- Ringkasan Hasil -->
+      <div id="resultSummary">Total Sukses: 0 | Total Gagal: 0</div>
+      
+      <!-- Tombol untuk Menampilkan/Tutup Panduan Penggunaan -->
+      <button id="toggleGuide">Tampilkan Panduan</button>
+      
+      <!-- Panel Panduan Penggunaan -->
+      <div id="usageGuide">
+        <h3>Panduan Penggunaan HTTP Request</h3>
+        <ul>
+          <li><strong>GET:</strong> Mengambil data dari server.</li>
+          <li><strong>POST:</strong> Mengirim data baru ke server.</li>
+          <li><strong>PUT:</strong> Mengganti data yang ada secara keseluruhan.</li>
+          <li><strong>DELETE:</strong> Menghapus data dari server.</li>
+          <li><strong>HEAD:</strong> Mengambil header respons tanpa body.</li>
+          <li><strong>OPTIONS:</strong> Mengambil opsi komunikasi yang didukung server.</li>
+          <li><strong>PATCH:</strong> Mengupdate sebagian data yang ada.</li>
+          <li><strong>TRACE:</strong> Melacak rute request yang dikirim.</li>
+          <li><strong>CONNECT:</strong> Menghubungkan ke server melalui proxy.</li>
+          <li><strong>PROPFIND:</strong> Mengambil properti dari resource (umumnya WebDAV).</li>
+        </ul>
+        <p>Pastikan URL valid (gunakan http:// atau https://) dan payload sesuai dengan method yang dipilih.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Chat Modal -->
+  <div id="chatModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Chat dengan Gemini</h2>
+        <span class="close" id="closeChat">&times;</span>
+      </div>
+      <div class="modal-body" id="chatArea">
+        <!-- Riwayat chat muncul di sini -->
+      </div>
+      <div class="modal-footer">
+        <input type="text" id="chatInput" placeholder="Tulis pesan...">
+        <button id="sendChat">Kirim</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tombol Chat (Ikon) -->
+  <button class="chat-button" id="openChat">&#128172;</button>
+
+  <footer>
+    &copy; 2025 Portfolio Saya. All rights reserved.
+  </footer>
+
+  <script>
+    /***** Visitor Counter menggunakan CountAPI *****/
+    fetch('https://api.countapi.xyz/hit/THEOYS123/myportfolio')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('visitorCount').innerText = data.value;
+      })
+      .catch(err => {
+        console.error('Visitor counter error:', err);
+        document.getElementById('visitorCount').innerText = 'N/A';
+      });
+
+    /***** Toggle Panduan Penggunaan *****/
+    const toggleGuideBtn = document.getElementById('toggleGuide');
+    const usageGuide = document.getElementById('usageGuide');
+    toggleGuideBtn.addEventListener('click', () => {
+      if (usageGuide.style.display === 'none' || usageGuide.style.display === '') {
+        usageGuide.style.display = 'block';
+        toggleGuideBtn.textContent = 'Tutup Panduan';
+      } else {
+        usageGuide.style.display = 'none';
+        toggleGuideBtn.textContent = 'Tampilkan Panduan';
+      }
+    });
+
+    /***** Fitur Chat Gemini (Integrasi API Sungguhan) *****/
+    const openChatBtn = document.getElementById('openChat');
+    const chatModal   = document.getElementById('chatModal');
+    const closeChat   = document.getElementById('closeChat');
+    const chatArea    = document.getElementById('chatArea');
+    const chatInput   = document.getElementById('chatInput');
+    const sendChat    = document.getElementById('sendChat');
+
+    openChatBtn.addEventListener('click', () => { chatModal.style.display = 'flex'; });
+    closeChat.addEventListener('click', () => { chatModal.style.display = 'none'; });
+
+    // Tampilkan balasan dari Gemini
+    function displayGeminiReply(reply) {
+      const geminiMsg = document.createElement('div');
+      geminiMsg.className = 'chat-message gemini';
+      geminiMsg.innerHTML = `<span>Gemini: ${reply}</span>`;
+      chatArea.appendChild(geminiMsg);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    // Fungsi untuk mengirim pesan ke API Gemini (ganti endpoint dan autentikasi jika diperlukan)
+    function sendGeminiMessage(message) {
+      fetch("https://api.gemini.ai/v1/chat", { 
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+          // Tambahkan header API-Key atau autentikasi lain jika diperlukan
+        },
+        body: JSON.stringify({ message: message })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.reply) {
+          displayGeminiReply(data.reply);
+        } else {
+          displayGeminiReply("Maaf, tidak ada balasan dari Gemini.");
+        }
+      })
+      .catch(error => {
+        console.error("Error komunikasi dengan Gemini:", error);
+        displayGeminiReply("Error: " + error);
+      });
+    }
+
+    sendChat.addEventListener('click', () => {
+      const message = chatInput.value.trim();
+      if (message) {
+        // Tampilkan pesan pengguna
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-message self';
+        userMsg.innerHTML = `<span>You: ${message}</span>`;
+        chatArea.appendChild(userMsg);
+        chatInput.value = '';
+        chatArea.scrollTop = chatArea.scrollHeight;
+        // Kirim ke API Gemini
+        sendGeminiMessage(message);
+      }
+    });
+    chatInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') sendChat.click();
+    });
+
+    /***** Fitur Pengiriman HTTP Request *****/
+    let intervals = [];
+    let successCount = 0;
+    let failCount = 0;
+    let logCounter = 0;
+    const logTableBody = document.querySelector('#logTable tbody');
+    const resultSummary = document.getElementById('resultSummary');
+
+    function updateSummary() {
+      resultSummary.textContent = `Total Sukses: ${successCount} | Total Gagal: ${failCount}`;
+    }
+
+    function addLogRow(threadId, method, sender, status) {
+      logCounter++;
+      const row = document.createElement('tr');
+      const timestamp = new Date().toLocaleTimeString();
+      row.innerHTML = `
+        <td>${logCounter}</td>
+        <td>${timestamp}</td>
+        <td>${threadId}</td>
+        <td>${method}</td>
+        <td>${sender}</td>
+        <td>${status}</td>
+      `;
+      logTableBody.appendChild(row);
+    }
+
+    document.getElementById('start').addEventListener('click', () => {
+      let url = document.getElementById('url').value.trim();
+      const senderName = document.getElementById('senderName').value.trim() || 'Anonymous';
+      const method = document.getElementById('method').value;
+      const payload = document.getElementById('payload').value.trim();
+      const threads = parseInt(document.getElementById('threads').value, 10);
+      const statusDiv = document.getElementById('status');
+
+      // Validasi URL: jika tidak diawali http:// atau https://, tambahkan https://
+      if (!/^https?:\/\//i.test(url)) {
+        url = "https://" + url;
+      }
+      if (!url) {
+        alert("Masukkan URL yang valid!");
+        return;
+      }
+
+      statusDiv.textContent = "Mengirim request...";
+
+      for (let i = 0; i < threads; i++) {
+        const intervalId = setInterval(() => {
+          let options = { method };
+          if (method !== "GET" && method !== "HEAD") {
+            options.headers = {
+              "Content-Type": "application/json",
+              "X-Sender": senderName
+            };
+            options.body = payload ? payload : "{}";
+          }
+          // Pastikan request dikirim ke server target (baik http maupun https)
+          fetch(url, options)
+            .then(response => {
+              if (response.ok) {
+                successCount++;
+                addLogRow(i + 1, method, senderName, 'Sukses');
+              } else {
+                failCount++;
+                addLogRow(i + 1, method, senderName, 'Gagal');
+              }
+              updateSummary();
+              return response.text();
+            })
+            .then(data => console.log(`Response [Thread ${i+1}]:`, data))
+            .catch(err => {
+              failCount++;
+              addLogRow(i + 1, method, senderName, 'Gagal');
+              updateSummary();
+              console.error(`Error [Thread ${i+1}]:`, err);
+            });
+        }, 2000);
+        intervals.push(intervalId);
+      }
+    });
+
+    document.getElementById('stop').addEventListener('click', () => {
+      intervals.forEach(id => clearInterval(id));
+      intervals = [];
+      document.getElementById('status').textContent = "Pengiriman request dihentikan.";
+    });
+  </script>
+</body>
+        </html>
